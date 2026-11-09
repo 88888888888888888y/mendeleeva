@@ -1,0 +1,375 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Менделеев: карточки и таблица</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;600&family=Unbounded:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#EDF1F8;--sf:#fff;--ink:#16213E;--mute:#5B6682;--line:#D3DAE9;--ac:#5B3DF5;--acink:#fff;--ok:#12805A;--okbg:#CDF2E3;--wa:#8A5A00;--wabg:#FFE7B3;--bad:#C93036;--cell:#DFE5F1;
+--disp:'Unbounded','Arial Black',system-ui,sans-serif;--body:'Golos Text',system-ui,-apple-system,'Segoe UI',sans-serif;
+color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0E1326;--sf:#172038;--ink:#E8ECF8;--mute:#98A3C0;--line:#2A3556;--ac:#9786FF;--acink:#0E1326;--ok:#5BE0AE;--okbg:#0F4A38;--wa:#FFD37A;--wabg:#5A4310;--bad:#FF8A8F;--cell:#222C4A;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0E1326;--sf:#172038;--ink:#E8ECF8;--mute:#98A3C0;--line:#2A3556;--ac:#9786FF;--acink:#0E1326;--ok:#5BE0AE;--okbg:#0F4A38;--wa:#FFD37A;--wabg:#5A4310;--bad:#FF8A8F;--cell:#222C4A;color-scheme:dark}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.5 var(--body)}
+main{max-width:760px;margin:0 auto;padding:16px 14px 40px}
+header{display:flex;justify-content:space-between;align-items:center;gap:12px}
+h1{font:700 1.25rem/1.1 var(--disp);margin:0}
+.streak{display:flex;align-items:center;gap:8px;background:var(--sf);border:1px solid var(--line);border-radius:999px;padding:6px 16px 6px 12px}
+.streak span{font-size:1.5rem;line-height:1;display:inline-block}
+.streak div{display:flex;flex-direction:column}
+.streak b{font:700 1.2rem/1.1 var(--disp)}
+.streak small{color:var(--mute);font-size:.75rem;line-height:1.2}
+.pop{animation:pop .35s}
+@keyframes pop{40%{transform:scale(1.35)}}
+.prog{margin:14px 0 6px;height:10px;border-radius:99px;background:var(--cell);display:flex;overflow:hidden}
+.prog i{display:block;height:100%;transition:width .4s}
+.prog .g{background:var(--ok)}.prog .a{background:#F0A020}
+#pt{margin:0;color:var(--mute);font-size:.9rem}
+.tabs{display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px;background:var(--cell);padding:4px;border-radius:14px;margin:14px 0}
+.tabs button{border:0;background:none;color:var(--mute);font:600 .95rem var(--body);padding:10px;border-radius:10px;cursor:pointer}
+.tabs button[aria-selected=true]{background:var(--sf);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.18)}
+.ctl{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:14px}
+.chip,select{border:1px solid var(--line);background:var(--sf);color:var(--ink);border-radius:99px;padding:7px 13px;font:600 .85rem var(--body);cursor:pointer}
+.chip[aria-pressed=true]{background:var(--ac);border-color:var(--ac);color:var(--acink)}
+.card{display:block;width:100%;height:280px;perspective:1200px;border:0;background:none;padding:0;cursor:pointer;font:inherit;color:inherit}
+.in{position:relative;width:100%;height:100%;transition:transform .5s;transform-style:preserve-3d}
+.card.f .in{transform:rotateY(180deg)}
+.face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;background:var(--sf);border:1px solid var(--line);border-radius:24px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:18px;text-align:center}
+.back{transform:rotateY(180deg);border:2px solid var(--ac)}
+.q{color:var(--mute);font-size:.9rem}
+.big{font:700 clamp(1.4rem,7.5vw,2.4rem)/1.15 var(--disp);overflow-wrap:anywhere}
+.big.num{font-size:clamp(3.5rem,22vw,6rem)}
+.sub{color:var(--mute);font-size:.95rem}
+.hint{text-align:center;color:var(--mute);font-size:.8rem;margin:8px 0 0}
+.ans{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.ans button{border:2px solid;border-radius:16px;padding:14px;font:600 1rem var(--body);cursor:pointer;background:var(--sf)}
+.no{border-color:var(--bad);color:var(--bad)}.yes{border-color:var(--ok);color:var(--ok)}
+.ans button:disabled{opacity:.35;cursor:default}
+.msg{min-height:1.5em;text-align:center;color:var(--ink);font-weight:600;margin:12px 0 0}
+.tw{overflow-x:auto;padding-bottom:8px}
+.grid{display:grid;grid-template-columns:repeat(18,44px);grid-template-rows:repeat(7,44px) 12px repeat(2,44px);gap:3px;width:max-content}
+.c{border:2px solid transparent;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;font:700 .9rem/1 var(--disp);cursor:pointer;padding:0;background:var(--cell);color:var(--ink)}
+.c i{font:400 .6rem/1 var(--body);margin-top:3px;opacity:.8}
+.c.s1{background:var(--wabg);color:var(--wa)}.c.s2{background:var(--okbg);color:var(--ok)}
+.c.sel{border-color:var(--ac)}
+.ph{display:flex;align-items:center;justify-content:center;font-size:.6rem;color:var(--mute);text-align:center}
+.legend{display:flex;flex-wrap:wrap;gap:14px;color:var(--mute);font-size:.8rem;margin:8px 0}
+.legend span::before{content:"";display:inline-block;width:12px;height:12px;border-radius:4px;margin-right:6px;vertical-align:-1px;background:var(--cell)}
+.legend .l1::before{background:var(--wabg)}.legend .l2::before{background:var(--okbg)}
+.info{background:var(--sf);border:1px solid var(--line);border-radius:16px;padding:12px 14px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.info button{border:0;background:var(--ac);color:var(--acink);border-radius:99px;padding:8px 14px;font:600 .85rem var(--body);cursor:pointer}
+.reset{background:none;border:0;color:var(--mute);text-decoration:underline;cursor:pointer;font:inherit;font-size:.85rem;margin-top:26px}
+.ans.one{grid-template-columns:1fr}
+.go{border:2px solid var(--ac);color:var(--ac);background:var(--sf);border-radius:16px;padding:0 16px;font:600 .95rem var(--body);cursor:pointer}
+.trow{display:flex;gap:8px;margin-top:12px}.trow #inp{margin-top:0;flex:1;min-width:0}
+#next{display:block;width:100%;margin-top:12px;padding:14px}
+.seg{grid-template-columns:1fr 1fr;margin:0 0 12px}
+.lat{color:var(--mute);font-size:.8rem;font-style:italic}
+.bd{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.b{background:var(--sf);border:1px solid var(--line);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:4px}
+.b span{font-size:1.8rem;line-height:1}.b b{font-size:.95rem}.b small{color:var(--mute);font-size:.8rem}
+.b.lock{opacity:.6}.b.lock span{filter:grayscale(1)}.b.got{border-color:var(--ok)}
+.bp{height:6px;border-radius:9px;background:var(--cell);overflow:hidden;margin-top:6px}.bp i{display:block;height:100%;background:var(--ac)}
+#toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);background:var(--ink);color:var(--bg);padding:12px 18px;border-radius:14px;font-weight:600;opacity:0;pointer-events:none;transition:opacity .3s,transform .3s;max-width:90vw;text-align:center}
+#toast.on{opacity:1;transform:translate(-50%,0)}
+#inp{display:block;width:100%;margin-top:12px;padding:14px 16px;border:2px solid var(--line);border-radius:16px;background:var(--sf);color:var(--ink);font:600 1.1rem var(--body);text-align:center}
+#inp.ok{border-color:var(--ok)}#inp.bad{border-color:var(--bad)}
+.card.ok .back{border-color:var(--ok)}.card.bad .back{border-color:var(--bad)}
+[hidden]{display:none!important}
+:focus-visible{outline:3px solid var(--ac);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<main>
+<header>
+  <h1>Менделеев</h1>
+  <div class="streak"><span id="fl">🔥</span><div><b id="st">0</b><small id="bs"></small></div></div>
+</header>
+<div class="prog"><i class="g" id="g"></i><i class="a" id="a"></i></div>
+<p id="pt"></p>
+
+<div class="tabs" role="tablist">
+  <button role="tab" id="t1" aria-selected="true">Карточки</button>
+  <button role="tab" id="t2" aria-selected="false">Таблица</button>
+  <button role="tab" id="t3" aria-selected="false">Награды</button>
+</div>
+
+<section id="v1">
+  <div class="tabs seg" role="tablist"><button role="tab" id="am0" aria-selected="true">Знал / не знал</button><button role="tab" id="am1" aria-selected="false">Ввод ответа</button></div>
+  <div class="ctl">
+    <button class="chip" data-m="a">Название → номер</button><button class="chip" data-m="b">Номер → название</button><button class="chip" data-m="c">Символ → название</button><button class="chip" data-m="d">Название → символ</button>
+    
+    
+    <select id="rng" aria-label="Диапазон">
+      <option value="all">Все 118</option><option value="1">1–20</option><option value="2">21–54</option><option value="3">55–118</option>
+    </select>
+    <button class="chip" id="only">Только невыученные</button>
+  </div>
+  <button class="card" id="card" aria-label="Карточка элемента, нажми чтобы перевернуть">
+    <div class="in"><div class="face" id="fr"></div><div class="face back" id="bk"></div></div>
+  </button>
+  <p class="hint" id="hint"></p>
+  <div class="trow" id="typed"><input id="inp" type="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" aria-label="Ответ"><button class="go" id="check">Проверить</button></div>
+  <div class="ans" id="ans">
+    <button class="no" id="no" disabled>Не знал</button>
+    <button class="yes" id="yes" disabled>Знал</button>
+  </div>
+  <button class="go" id="next" hidden>Дальше</button>
+  <p class="msg" id="msg" aria-live="polite"></p>
+</section>
+
+<section id="v2" hidden>
+  <div class="legend"><span>Не знаю</span><span class="l1">Один раз угадал</span><span class="l2">Выучен</span></div>
+  <div class="tw"><div class="grid" id="grid"></div></div>
+  <p class="hint" style="text-align:left">Таблица шире экрана, листай вбок.</p>
+  <div class="info" id="info"></div>
+</section>
+
+<section id="v3" hidden><p class="hint" id="ap" style="text-align:left"></p><div class="bd" id="bd"></div></section>
+<div id="toast" role="status"></div>
+<button class="reset" id="reset">Сбросить прогресс</button>
+</main>
+
+<script>
+(function(){
+var RAW="H Водород|He Гелий|Li Литий|Be Бериллий|B Бор|C Углерод|N Азот|O Кислород|F Фтор|Ne Неон|Na Натрий|Mg Магний|Al Алюминий|Si Кремний|P Фосфор|S Сера|Cl Хлор|Ar Аргон|K Калий|Ca Кальций|Sc Скандий|Ti Титан|V Ванадий|Cr Хром|Mn Марганец|Fe Железо|Co Кобальт|Ni Никель|Cu Медь|Zn Цинк|Ga Галлий|Ge Германий|As Мышьяк|Se Селен|Br Бром|Kr Криптон|Rb Рубидий|Sr Стронций|Y Иттрий|Zr Цирконий|Nb Ниобий|Mo Молибден|Tc Технеций|Ru Рутений|Rh Родий|Pd Палладий|Ag Серебро|Cd Кадмий|In Индий|Sn Олово|Sb Сурьма|Te Теллур|I Иод|Xe Ксенон|Cs Цезий|Ba Барий|La Лантан|Ce Церий|Pr Празеодим|Nd Неодим|Pm Прометий|Sm Самарий|Eu Европий|Gd Гадолиний|Tb Тербий|Dy Диспрозий|Ho Гольмий|Er Эрбий|Tm Тулий|Yb Иттербий|Lu Лютеций|Hf Гафний|Ta Тантал|W Вольфрам|Re Рений|Os Осмий|Ir Иридий|Pt Платина|Au Золото|Hg Ртуть|Tl Таллий|Pb Свинец|Bi Висмут|Po Полоний|At Астат|Rn Радон|Fr Франций|Ra Радий|Ac Актиний|Th Торий|Pa Протактиний|U Уран|Np Нептуний|Pu Плутоний|Am Америций|Cm Кюрий|Bk Берклий|Cf Калифорний|Es Эйнштейний|Fm Фермий|Md Менделевий|No Нобелий|Lr Лоуренсий|Rf Резерфордий|Db Дубний|Sg Сиборгий|Bh Борий|Hs Хассий|Mt Мейтнерий|Ds Дармштадтий|Rg Рентгений|Cn Коперниций|Nh Нихоний|Fl Флеровий|Mc Московий|Lv Ливерморий|Ts Теннессин|Og Оганесон";
+var LAT="Hydrogenium|Helium|Lithium|Beryllium|Borum|Carboneum|Nitrogenium|Oxygenium|Fluorum|Neon|Natrium|Magnesium|Aluminium|Silicium|Phosphorus|Sulfur|Chlorum|Argon|Kalium|Calcium|Scandium|Titanium|Vanadium|Chromium|Manganum|Ferrum|Cobaltum|Niccolum|Cuprum|Zincum|Gallium|Germanium|Arsenicum|Selenium|Bromum|Krypton|Rubidium|Strontium|Yttrium|Zirconium|Niobium|Molybdaenum|Technetium|Ruthenium|Rhodium|Palladium|Argentum|Cadmium|Indium|Stannum|Stibium|Tellurium|Iodum|Xenon|Caesium|Barium|Lanthanum|Cerium|Praseodymium|Neodymium|Promethium|Samarium|Europium|Gadolinium|Terbium|Dysprosium|Holmium|Erbium|Thulium|Ytterbium|Lutetium|Hafnium|Tantalum|Wolframium|Rhenium|Osmium|Iridium|Platinum|Aurum|Hydrargyrum|Thallium|Plumbum|Bismuthum|Polonium|Astatum|Radon|Francium|Radium|Actinium|Thorium|Protactinium|Uranium|Neptunium|Plutonium|Americium|Curium|Berkelium|Californium|Einsteinium|Fermium|Mendelevium|Nobelium|Lawrencium|Rutherfordium|Dubnium|Seaborgium|Bohrium|Hassium|Meitnerium|Darmstadtium|Roentgenium|Copernicium|Nihonium|Flerovium|Moscovium|Livermorium|Tennessine|Oganesson".split("|");
+var D=RAW.split("|").map(function(s,i){var p=s.split(" ");return{n:i+1,sym:p[0],name:p[1],lat:LAT[i]}});
+function LT(e){return '<div class="lat">'+e.lat+'</div>'}
+function $(id){return document.getElementById(id)}
+function has(a,n){return a.indexOf(n)>-1}
+function cat(n){
+  if(has([2,10,18,36,54,86,118],n))return"Благородный газ";
+  if(has([3,11,19,37,55,87],n))return"Щелочной металл";
+  if(has([4,12,20,38,56,88],n))return"Щёлочноземельный металл";
+  if(has([9,17,35,53,85,117],n))return"Галоген";
+  if(has([5,14,32,33,51,52],n))return"Полуметалл";
+  if(has([1,6,7,8,15,16,34],n))return"Неметалл";
+  if(n>=57&&n<=71)return"Лантаноид";
+  if(n>=89&&n<=103)return"Актиноид";
+  if(has([13,31,49,50,81,82,83,84],n)||(n>=113&&n<=116))return"Постпереходный металл";
+  return"Переходный металл";
+}
+function pos(n){
+  if(n===1)return[1,1];if(n===2)return[1,18];
+  if(n<=4)return[2,n-2];if(n<=10)return[2,n+8];
+  if(n<=12)return[3,n-10];if(n<=18)return[3,n];
+  if(n<=36)return[4,n-18];if(n<=54)return[5,n-36];
+  if(n<=56)return[6,n-54];if(n<=71)return[9,n-54];if(n<=86)return[6,n-68];
+  if(n<=88)return[7,n-86];if(n<=103)return[10,n-86];return[7,n-100];
+}
+var S={s:{},streak:0,best:0,mode:"mix",range:"all",only:true};
+try{var r=JSON.parse(localStorage.getItem("mdl1")||"null");if(r&&typeof r==="object")for(var k in r)S[k]=r[k]}catch(e){}
+if(!S.modes||!S.modes.length)S.modes=S.mode==="name"?["a"]:S.mode==="num"?["b"]:["a","b","c","d"];
+if(S.typed===undefined)S.typed=false;
+function save(){try{localStorage.setItem("mdl1",JSON.stringify(S))}catch(e){}}
+function sc(n){return S.s[n]||0}
+var cur=null,flipped=false,selN=0,tab=1;
+
+/* table */
+var grid=$("grid");
+D.forEach(function(e){
+  var p=pos(e.n),b=document.createElement("button");
+  b.className="c";b.style.gridRow=p[0];b.style.gridColumn=p[1];b.dataset.n=e.n;
+  b.innerHTML="<span>"+e.sym+"</span><i>"+e.n+"</i>";
+  b.setAttribute("aria-label",e.n+", "+e.name);
+  b.onclick=function(){selN=e.n;paint();info()};
+  grid.appendChild(b);
+});
+[[6,3,"57–71"],[7,3,"89–103"]].forEach(function(a){
+  var d=document.createElement("div");d.className="ph";d.style.gridRow=a[0];d.style.gridColumn=a[1];d.textContent=a[2];grid.appendChild(d);
+});
+function paint(){
+  var cs=grid.querySelectorAll(".c");
+  for(var i=0;i<cs.length;i++){var n=+cs[i].dataset.n;cs[i].className="c s"+sc(n)+(n===selN?" sel":"")}
+}
+function info(){
+  var el=$("info");
+  if(!selN){el.textContent="Нажми на элемент, чтобы увидеть его название.";return}
+  var e=D[selN-1],done=sc(selN)>=2;
+  el.innerHTML="<span><b>"+e.n+" "+e.sym+", "+e.name+"</b><br><small>"+e.lat+", "+cat(e.n)+"</small></span><button id=\"tog\">"+(done?"Сбросить":"Отметить выученным")+"</button>";
+  $("tog").onclick=function(){S.s[selN]=done?0:2;ach();save();head();paint();info()};
+}
+
+/* header */
+function head(){
+  var L=0,M=0;D.forEach(function(e){var s=sc(e.n);if(s>=2)L++;else if(s===1)M++});
+  $("g").style.width=L/118*100+"%";$("a").style.width=M/118*100+"%";
+  $("pt").textContent="Выучено "+L+" из 118"+(M?", в процессе "+M:"");
+  $("st").textContent=S.streak;$("bs").textContent="рекорд "+S.best;badges();
+}
+function pop(){var f=$("fl");f.classList.remove("pop");void f.offsetWidth;f.classList.add("pop")}
+
+/* cards */
+function inRange(n){var g=S.range;return g==="all"||(g==="1"&&n<=20)||(g==="2"&&n>20&&n<=54)||(g==="3"&&n>54)}
+function fill(){
+  var F,B;
+  if(!cur){
+    F=B="<div class=\"big\">Всё выучено</div><div class=\"sub\">Выбери другой диапазон или выключи «Только невыученные».</div>";
+  }else{
+    var e=cur.e,k=cat(e.n);
+    if(cur.dir==="c"){
+      F="<div class=\"q\">Как называется элемент?</div><div class=\"big num\">"+e.sym+"</div>";
+      B="<div class=\"big\">"+e.name+"</div><div class=\"sub\">"+e.sym+", номер "+e.n+"</div><div class=\"sub\">"+k+"</div>";
+    }else if(cur.dir==="d"){
+      F="<div class=\"q\">Какой символ у элемента?</div><div class=\"big\">"+e.name+"</div>";
+      B="<div class=\"big num\">"+e.sym+"</div><div class=\"sub\">номер "+e.n+", "+e.name+"</div>"+LT(e)+"<div class=\"sub\">"+k+"</div>";
+    }else if(cur.dir==="a"){
+      F="<div class=\"q\">Какой номер у элемента?</div><div class=\"big\">"+e.name+"</div>"+LT(cur.e);
+      B="<div class=\"big num\">"+e.n+"</div><div class=\"sub\">"+e.sym+", "+e.name+"</div>"+LT(e)+"<div class=\"sub\">"+k+"</div>";
+    }else{
+      F="<div class=\"q\">Как называется элемент?</div><div class=\"big num\">"+e.n+"</div>";
+      B="<div class=\"big\">"+e.name+"</div><div class=\"sub\">"+e.sym+", номер "+e.n+"</div><div class=\"sub\">"+k+"</div>";
+    }
+  }
+  if(cur&&(cur.dir==="b"||cur.dir==="c"))B=B.replace("</div><div class=\"sub\">","</div>"+LT(cur.e)+"<div class=\"sub\">");
+  $("fr").innerHTML=F;$("bk").innerHTML=B;
+}
+function next(){
+  var pool=D.filter(function(e){return inRange(e.n)&&(!S.only||sc(e.n)<2)});
+  var was=flipped;flipped=false;
+  $("card").classList.remove("f");$("yes").disabled=$("no").disabled=true;
+  if(!pool.length){cur=null}
+  else{
+    var e;do{e=pool[Math.random()*pool.length|0]}while(pool.length>1&&cur&&e.n===cur.e.n);
+    cur={e:e,dir:S.modes[Math.random()*S.modes.length|0]};
+  }
+  if(was)setTimeout(fill,280);else fill();
+  resetTyped();
+}
+$("card").onclick=function(){
+  if(checked||S.typed)return;
+  if(!cur)return;
+  flipped=!flipped;this.classList.toggle("f",flipped);
+  $("yes").disabled=$("no").disabled=!flipped;$("inp").readOnly=flipped;
+};
+function answer(ok,stay){
+  if(!cur||!flipped)return;
+  var n=cur.e.n,m="";
+  if(ok){
+    S.s[n]=Math.min(2,sc(n)+1);S.streak++;if(S.streak>S.best)S.best=S.streak;pop();
+    if(S.s[n]===2)m=cur.e.name+" выучен";
+    if(S.streak%5===0)m="Серия "+S.streak+", так держать";
+  }else{
+    S.s[n]=0;if(S.streak>=3)m="Серия оборвалась на "+S.streak;S.streak=0;
+  }
+  ach();save();head();paint();info();$("msg").textContent=m;if(!stay)next();
+}
+$("yes").onclick=function(){answer(true)};
+$("no").onclick=function(){answer(false)};
+document.addEventListener("keydown",function(e){
+  if(tab!==1||S.typed)return;
+  if(e.key==="ArrowRight")answer(true);
+  if(e.key==="ArrowLeft")answer(false);
+});
+
+/* achievements */
+function Lc(){return D.filter(function(e){return sc(e.n)>=2}).length}
+function gr(a){return function(){return a.filter(function(n){return sc(n)>=2}).length}}
+function bst(){return S.best}
+var R20=[];for(var q=1;q<=20;q++)R20.push(q);
+var AC=[
+['🌱','Первый шаг','Выучи первый элемент',Lc,1],
+['🧪','Десяточка','Выучи 10 элементов',Lc,10],
+['⚗️','Двадцатка','Выучи элементы с 1 по 20',gr(R20),20],
+['🧠','Половина пути','Выучи 59 элементов',Lc,59],
+['🏆','Менделеев гордится','Выучи все 118 элементов',Lc,118],
+['🔥','Разогрев','Серия из 5 верных ответов',bst,5],
+['⚡','В ударе','Серия из 10 верных ответов',bst,10],
+['🚀','Неудержимый','Серия из 25 верных ответов',bst,25],
+['💎','Легенда','Серия из 50 верных ответов',bst,50],
+['🎈','Благородная компания','Выучи все 7 благородных газов',gr([2,10,18,36,54,86,118]),7],
+['🧂','Щелочной клуб','Выучи все 6 щелочных металлов',gr([3,11,19,37,55,87]),6],
+['⌨️','Печатная машинка','20 верных ответов, введённых вручную',function(){return S.tc||0},20]
+];
+function badges(){
+  var h='',g=0;
+  AC.forEach(function(a,i){
+    var got=S.ach&&S.ach[i],c=Math.min(a[3](),a[4]);
+    if(got)g++;
+    h+='<div class="b '+(got?'got':'lock')+'"><span>'+a[0]+'</span><b>'+a[1]+'</b><small>'+a[2]+'</small>'+(got?'':'<div class="bp"><i style="width:'+c/a[4]*100+'%"></i></div><small>'+c+' из '+a[4]+'</small>')+'</div>';
+  });
+  $('bd').innerHTML=h;$('ap').textContent='Открыто '+g+' из '+AC.length;
+}
+var tt;
+function toast(t){var el=$('toast');el.textContent=t;el.classList.add('on');clearTimeout(tt);tt=setTimeout(function(){el.classList.remove('on')},3200)}
+function ach(){
+  if(!S.ach)S.ach={};
+  var n=[];
+  AC.forEach(function(a,i){if(!S.ach[i]&&a[3]()>=a[4]){S.ach[i]=1;n.push(a[1])}});
+  if(n.length)toast('Достижение: '+n.join(', '));
+}
+
+/* typed answers */
+var checked=false;
+function norm(s){return s.toLowerCase().replace(/ё/g,"е").replace(/\s+/g,"")}
+function okAns(v){
+  var e=cur.e,t=norm(v);
+  if(!t)return false;
+  if(cur.dir==="a")return /^\d+$/.test(t)&&+t===e.n;
+  if(cur.dir==="d")return t===e.sym.toLowerCase();
+  return t===norm(e.name)||(e.n===53&&t==="йод");
+}
+function resetTyped(){
+  checked=false;var i=$("inp");i.value="";i.readOnly=false;i.className="";
+  $("card").classList.remove("ok","bad");
+  $("ans").hidden=!!S.typed;$("typed").hidden=!S.typed;$("next").hidden=true;$("check").hidden=false;
+  i.inputMode=cur&&cur.dir==="a"?"numeric":"text";
+  i.placeholder=cur?(cur.dir==="a"?"Или впиши номер":cur.dir==="d"?"Или впиши символ (Fe)":"Или впиши название"):"";
+  if(S.typed&&cur&&tab===1&&!matchMedia("(pointer:coarse)").matches)i.focus();
+}
+function submit(){
+  if(!cur)return;
+  if(checked){next();return}
+  if(flipped||!$("inp").value.trim())return;
+  var ok=okAns($("inp").value),e=cur.e;
+  checked=true;flipped=true;
+  $("card").classList.add("f",ok?"ok":"bad");
+  var i=$("inp");i.readOnly=true;i.className=ok?"ok":"bad";
+  $("ans").hidden=true;$("next").hidden=false;$("check").hidden=true;if(ok)S.tc=(S.tc||0)+1;
+  answer(ok,true);
+  var m=$("msg").textContent;
+  $("msg").textContent=ok?(m||"Верно"):"Правильно: "+(cur.dir==="a"?e.n:cur.dir==="d"?e.sym:e.name);
+}
+$("check").onclick=function(){submit()};$("next").onclick=function(){submit()};
+
+$("inp").onkeydown=function(ev){if(ev.key==="Enter"){ev.preventDefault();submit()}};
+
+/* controls */
+function syncCtl(){
+  document.querySelectorAll("[data-m]").forEach(function(b){b.setAttribute("aria-pressed",S.modes.indexOf(b.dataset.m)>-1)});
+  
+  $("am0").setAttribute("aria-selected",!S.typed);$("am1").setAttribute("aria-selected",!!S.typed);
+  $("hint").textContent=S.typed?"Впиши ответ и нажми Enter.":"Нажми на карточку, чтобы перевернуть, и отметь «Знал» или «Не знал». Клавиши ← и → тоже работают.";
+  $("only").setAttribute("aria-pressed",!!S.only);$("rng").value=S.range;
+}
+document.querySelectorAll("[data-m]").forEach(function(b){b.onclick=function(){var m=b.dataset.m,i=S.modes.indexOf(m);if(i>-1){if(S.modes.length>1)S.modes.splice(i,1)}else S.modes.push(m);save();syncCtl();next()}});
+
+$("am0").onclick=function(){S.typed=false;save();syncCtl();next()};
+$("am1").onclick=function(){S.typed=true;save();syncCtl();next()};
+$("only").onclick=function(){S.only=!S.only;save();syncCtl();next()};
+$("rng").onchange=function(){S.range=this.value;save();next()};
+function show(t){
+  tab=t;$("v1").hidden=t!==1;$("v2").hidden=t!==2;$("v3").hidden=t!==3;
+  $("t1").setAttribute("aria-selected",t===1);$("t2").setAttribute("aria-selected",t===2);$("t3").setAttribute("aria-selected",t===3);
+}
+$("t1").onclick=function(){show(1)};$("t2").onclick=function(){show(2)};$("t3").onclick=function(){show(3)};
+
+var armed=false;
+$("reset").onclick=function(){
+  var b=this;
+  if(!armed){armed=true;b.textContent="Точно сбросить? Нажми ещё раз";setTimeout(function(){armed=false;b.textContent="Сбросить прогресс"},4000)}
+  else{S.s={};S.streak=0;S.best=0;S.ach={};S.tc=0;armed=false;b.textContent="Сбросить прогресс";save();head();paint();selN=0;info();$("msg").textContent="";next()}
+};
+
+syncCtl();head();paint();info();next();
+})();
+</script>
+</body>
+</html>
